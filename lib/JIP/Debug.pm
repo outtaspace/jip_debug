@@ -29,11 +29,18 @@ eval {
 };
 
 our $MAKE_MSG_HEADER = sub {
+    # $MAKE_MSG_HEADER=0, to_debug=1
     my ($package, undef, $line) = caller(1);
 
-    my $text = sprintf q{[package=%s, line=%d]:},
-        $package,
-        $line;
+    # $MAKE_MSG_HEADER=0, to_debug=1, subroutine=2
+    my (undef, undef, undef, $subroutine) = caller(2);
+
+    my $text = join q{, }, (
+        sprintf('package=%s', $package),
+        (defined $subroutine ? sprintf('subroutine=%s',$subroutine) : ()),
+        sprintf('line=%d', $line, ),
+    );
+    $text = qq{[$text]:};
 
     return $MAYBE_COLORED->($text);
 };
@@ -50,7 +57,7 @@ eval {
 };
 
 sub to_debug {
-    my $msg_text = do {
+    my $msg_body = do {
         local $Data::Dumper::Indent   = $DUMPER_INDENT;
         local $Data::Dumper::Deepcopy = $DUMPER_DEEPCOPY;
 
@@ -59,7 +66,7 @@ sub to_debug {
 
     my $msg = sprintf qq{%s\n%s\n\n%s},
         $MAKE_MSG_HEADER->(),
-        $msg_text,
+        $msg_body,
         $MAYBE_COLORED->($MSG_DELIMITER);
 
     send_to_output($msg);
