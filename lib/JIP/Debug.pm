@@ -15,6 +15,8 @@ our @EXPORT_OK = qw(to_debug to_debug_raw);
 
 our $COLOR = 'bright_yellow';
 
+our $MSG_FORMAT = qq{%s\n%s\n\n%s};
+
 our $MSG_DELIMITER = q{=} x 80 . qq{\n\n};
 
 our $DUMPER_INDENT   = 1;
@@ -33,11 +35,13 @@ our $MAKE_MSG_HEADER = sub {
     my ($package, undef, $line) = caller(1);
 
     # $MAKE_MSG_HEADER=0, to_debug=1, subroutine=2
-    my (undef, undef, undef, $subroutine) = caller(2);
+    my $subroutine = (caller(2))[3];
+
+    $subroutine = resolve_subroutine_name($subroutine);
 
     my $text = join q{, }, (
         sprintf('package=%s', $package),
-        (defined $subroutine ? sprintf('subroutine=%s',$subroutine) : ()),
+        (defined $subroutine ? sprintf('subroutine=%s', $subroutine) : ()),
         sprintf('line=%d', $line, ),
     );
     $text = qq{[$text]:};
@@ -64,7 +68,7 @@ sub to_debug {
         Dumper(\@_);
     };
 
-    my $msg = sprintf qq{%s\n%s\n\n%s},
+    my $msg = sprintf $MSG_FORMAT,
         $MAKE_MSG_HEADER->(),
         $msg_body,
         $MAYBE_COLORED->($MSG_DELIMITER);
@@ -75,7 +79,7 @@ sub to_debug {
 sub to_debug_raw {
     my $msg_text = shift;
 
-    my $msg = sprintf qq{%s\n%s\n\n%s},
+    my $msg = sprintf $MSG_FORMAT,
         $MAKE_MSG_HEADER->(),
         $msg_text,
         $MAYBE_COLORED->($MSG_DELIMITER);
@@ -91,6 +95,18 @@ sub send_to_output {
     flock $HANDLE, LOCK_EX;
     $HANDLE->print($msg) or croak(sprintf q{Can't write to output: %s}, $OS_ERROR);
     flock $HANDLE, LOCK_UN;
+
+    return 1;
+}
+
+sub resolve_subroutine_name {
+    my $subroutine = shift;
+
+    return unless defined $subroutine;
+
+    my ($subroutine_name) = $subroutine =~ m{::(\w+)$}x;
+
+    return $subroutine_name;
 }
 
 1;
