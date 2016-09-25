@@ -71,7 +71,7 @@ sub to_debug {
     my $msg = sprintf $MSG_FORMAT,
         $MAKE_MSG_HEADER->(),
         $msg_body,
-        $MAYBE_COLORED->($MSG_DELIMITER);
+        $MAYBE_COLORED->(defined $MSG_DELIMITER ? $MSG_DELIMITER : q{});
 
     send_to_output($msg);
 }
@@ -82,7 +82,7 @@ sub to_debug_raw {
     my $msg = sprintf $MSG_FORMAT,
         $MAKE_MSG_HEADER->(),
         $msg_text,
-        $MAYBE_COLORED->($MSG_DELIMITER);
+        $MAYBE_COLORED->(defined $MSG_DELIMITER ? $MSG_DELIMITER : q{});
 
     send_to_output($msg);
 }
