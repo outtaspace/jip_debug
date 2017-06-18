@@ -1,0 +1,7 @@
+MANIFEST            This list of files
+lib/JIP/Debug.pm
+t/00-jip-debug.t
+Makefile.PL
+Changes
+LICENSE
+README
