@@ -10,7 +10,7 @@ use Data::Dumper qw(Dumper);
 use Fcntl qw(LOCK_EX LOCK_UN);
 use English qw(-no_match_vars);
 
-our $VERSION   = '0.999_001';
+our $VERSION   = '0.999_002';
 our @EXPORT_OK = qw(to_debug to_debug_raw to_debug_empty);
 
 our $HANDLE = \*STDERR;
@@ -138,7 +138,7 @@ JIP::Debug - provides a convenient way to attach debug print statements anywhere
 
 =head1 VERSION
 
-Version 0.999_001
+Version 0.999_002
 
 =head1 SYNOPSIS
 
