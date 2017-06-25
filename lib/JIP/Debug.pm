@@ -20,6 +20,7 @@ our $MSG_DELIMITER = q{-} x 80;
 
 our $DUMPER_INDENT   = 1;
 our $DUMPER_DEEPCOPY = 1;
+our $DUMPER_SORTKEYS = 1;
 
 our $COLOR = 'bright_green';
 
@@ -63,6 +64,7 @@ sub to_debug {
     my $msg_body = do {
         local $Data::Dumper::Indent   = $DUMPER_INDENT;
         local $Data::Dumper::Deepcopy = $DUMPER_DEEPCOPY;
+        local $Data::Dumper::Sortkeys = $DUMPER_SORTKEYS;
 
         Dumper(\@_);
     };
