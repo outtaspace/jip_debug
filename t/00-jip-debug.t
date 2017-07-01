@@ -8,8 +8,8 @@ use English qw(-no_match_vars);
 use Capture::Tiny qw(capture capture_stderr);
 
 BEGIN {
-    eval "use Test::Exception";
-    plan skip_all => "Test::Exception needed" if $@;
+    eval 'use Test::Exception';
+    plan skip_all => 'Test::Exception needed' if $@;
 }
 
 plan tests => 8;
@@ -63,13 +63,14 @@ subtest 'Exportable variables' => sub {
 };
 
 subtest '_resolve_subroutine_name()' => sub {
-    plan tests => 5;
+    plan tests => 6;
 
     is JIP::Debug::_resolve_subroutine_name(),                  undef;
     is JIP::Debug::_resolve_subroutine_name(undef),             undef;
     is JIP::Debug::_resolve_subroutine_name(q{}),               undef;
     is JIP::Debug::_resolve_subroutine_name('subroutine_name'), undef;
 
+    is JIP::Debug::_resolve_subroutine_name('::subroutine_name'),                 'subroutine_name';
     is JIP::Debug::_resolve_subroutine_name('package::package::subroutine_name'), 'subroutine_name';
 };
 
@@ -96,19 +97,13 @@ subtest 'to_debug()' => sub {
     my $stderr_listing = capture_stderr {
         local $JIP::Debug::MAKE_MSG_HEADER = sub { 'header' };
         local $JIP::Debug::MAYBE_COLORED   = sub { $ARG[0] };
-
-        local $JIP::Debug::DUMPER_INDENT = 0;
-        local $JIP::Debug::MSG_DELIMITER = 'delimiter';
+        local $JIP::Debug::DUMPER_INDENT   = 0;
 
         JIP::Debug::to_debug(42);
     };
     like $stderr_listing, qr{
         ^
-        delimiter
-        \n
         header
-        \n
-        delimiter
         \n
         \$VAR1\s+=\s+\[42\];
         \n\n
@@ -123,18 +118,11 @@ subtest 'to_debug_raw()' => sub {
         local $JIP::Debug::MAKE_MSG_HEADER = sub { 'header' };
         local $JIP::Debug::MAYBE_COLORED   = sub { $ARG[0] };
 
-        local $JIP::Debug::DUMPER_INDENT = 0;
-        local $JIP::Debug::MSG_DELIMITER = 'delimiter';
-
         JIP::Debug::to_debug_raw(42);
     };
     like $stderr_listing, qr{
         ^
-        delimiter
-        \n
         header
-        \n
-        delimiter
         \n
         42
         \n\n
@@ -148,17 +136,14 @@ subtest 'to_debug_empty()' => sub {
     my $stderr_listing = capture_stderr {
         local $JIP::Debug::MAKE_MSG_HEADER = sub { 'header' };
         local $JIP::Debug::MAYBE_COLORED   = sub { $ARG[0] };
-
-        local $JIP::Debug::DUMPER_INDENT = 0;
-        local $JIP::Debug::MSG_DELIMITER = 'delimiter';
+        local $JIP::Debug::DUMPER_INDENT   = 0;
 
         JIP::Debug::to_debug_empty(42);
     };
     like $stderr_listing, qr{
         ^
-        delimiter
+        header
         \n
-        delimiter
         \n{20}
         $
     }x;

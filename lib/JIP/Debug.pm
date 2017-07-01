@@ -15,8 +15,9 @@ our @EXPORT_OK = qw(to_debug to_debug_raw to_debug_empty);
 
 our $HANDLE = \*STDERR;
 
-our $MSG_FORMAT    = qq{%s\n%s\n%s\n%s\n\n};
-our $MSG_DELIMITER = q{-} x 80;
+our $MSG_FORMAT      = qq{%s\n%s\n\n};
+our $MSG_DELIMITER   = q{-} x 80;
+our $MSG_EMPTY_LINES = qq{\n} x 18;
 
 our $DUMPER_INDENT   = 1;
 our $DUMPER_DEEPCOPY = 1;
@@ -46,6 +47,11 @@ our $MAKE_MSG_HEADER = sub {
     );
     $text = qq{[$text]:};
 
+    {
+        my $msg_delimiter = defined $MSG_DELIMITER ? $MSG_DELIMITER : q{};
+        $text = sprintf qq{%s\n%s\n%s}, $msg_delimiter, $text, $msg_delimiter;
+    }
+
     return $MAYBE_COLORED->($text);
 };
 
@@ -69,14 +75,7 @@ sub to_debug {
         Dumper(\@_);
     };
 
-    my $msg_delimiter = defined $MSG_DELIMITER ? $MSG_DELIMITER : q{};
-    $msg_delimiter = $MAYBE_COLORED->($msg_delimiter);
-
-    my $msg = sprintf $MSG_FORMAT,
-        $msg_delimiter,
-        $MAKE_MSG_HEADER->(),
-        $msg_delimiter,
-        $msg_body;
+    my $msg = sprintf $MSG_FORMAT, $MAKE_MSG_HEADER->(), $msg_body;
 
     _send_to_output($msg);
 }
@@ -84,26 +83,13 @@ sub to_debug {
 sub to_debug_raw {
     my $msg_text = shift;
 
-    my $msg_delimiter = defined $MSG_DELIMITER ? $MSG_DELIMITER : q{};
-    $msg_delimiter = $MAYBE_COLORED->($msg_delimiter);
-
-    my $msg = sprintf $MSG_FORMAT,
-        $msg_delimiter,
-        $MAKE_MSG_HEADER->(),
-        $msg_delimiter,
-        $msg_text;
+    my $msg = sprintf $MSG_FORMAT, $MAKE_MSG_HEADER->(), $msg_text;
 
     _send_to_output($msg);
 }
 
 sub to_debug_empty {
-    my $msg_delimiter = defined $MSG_DELIMITER ? $MSG_DELIMITER : q{};
-    $msg_delimiter = $MAYBE_COLORED->($msg_delimiter);
-
-    my $msg = sprintf qq{%s\n%s%s},
-        $msg_delimiter,
-        $msg_delimiter,
-        qq{\n} x 20;
+    my $msg = sprintf $MSG_FORMAT, $MAKE_MSG_HEADER->(), $MSG_EMPTY_LINES;
 
     _send_to_output($msg);
 }
@@ -160,6 +146,11 @@ Version 0.999_002
 
     # Prints empty lines
     to_debug_empty();
+
+=head1 CODE SNIPPET
+
+    use JIP::Debug qw(to_debug to_debug_raw to_debug_empty);
+    BEGIN { $JIP::Debug::HANDLE = IO::File->new('/home/my_dir/debug.log', '>>'); }
 
 =head1 SEE ALSO
 
