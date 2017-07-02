@@ -11,7 +11,7 @@ use Fcntl qw(LOCK_EX LOCK_UN);
 use English qw(-no_match_vars);
 
 our $VERSION   = '0.999_002';
-our @EXPORT_OK = qw(to_debug to_debug_raw to_debug_empty);
+our @EXPORT_OK = qw(to_debug to_debug_raw to_debug_empty to_debug_count);
 
 our $HANDLE = \*STDERR;
 
@@ -55,6 +55,9 @@ our $MAKE_MSG_HEADER = sub {
     return $MAYBE_COLORED->($text);
 };
 
+my $NO_LABEL_KEY   = '<no label>';
+my %COUNT_OF_LABEL = ($NO_LABEL_KEY => 0);
+
 # Supported on Perl 5.22+
 eval {
     require Sub::Util;
@@ -90,6 +93,22 @@ sub to_debug_raw {
 
 sub to_debug_empty {
     my $msg = sprintf $MSG_FORMAT, $MAKE_MSG_HEADER->(), $MSG_EMPTY_LINES;
+
+    _send_to_output($msg);
+}
+
+sub to_debug_count {
+    my $label = shift;
+
+    $label = defined $label && length $label ? $label : $NO_LABEL_KEY;
+
+    my $count = $COUNT_OF_LABEL{$label} || 0;
+    $count++;
+    $COUNT_OF_LABEL{$label} = $count;
+
+    my $msg_body = sprintf '%s: %d', $label, $count;
+
+    my $msg = sprintf $MSG_FORMAT, $MAKE_MSG_HEADER->(), $msg_body;
 
     _send_to_output($msg);
 }
@@ -130,9 +149,9 @@ Version 0.999_002
 
 =head1 SYNOPSIS
 
-    use JIP::Debug qw(to_debug to_debug_raw to_debug_empty);
+    use JIP::Debug qw(to_debug to_debug_raw to_debug_empty to_debug_count);
 
-    # The to_debug and to_debug_raw functions print messages to an output stream.
+    # The to_debug and other functions print messages to an output stream.
 
     # For complex data structures (references, arrays and hashes) you can use the
     to_debug(
@@ -147,9 +166,31 @@ Version 0.999_002
     # Prints empty lines
     to_debug_empty();
 
+    # Prints the number of times that this particular call to to_debug_count() has been called
+    to_debug_count();
+
+=head1 METHODS
+
+=head2 to_debug_count
+
+Logs the number of times that this particular call to C<to_debug_count()> has been called.
+
+This function takes an optional argument C<label>. If label is supplied, this function
+logs the number of times C<to_debug_count()> has been called with that particular C<label>.
+
+C<label> - a string. If this is supplied, C<to_debug_count()> outputs the number of times
+it has been called at this line and with that label.
+
+    to_debug_count('label');
+
+If C<label> is omitted, the function logs the number of times C<to_debug_count()> has been
+called at this particular line.
+
+    to_debug_count();
+
 =head1 CODE SNIPPET
 
-    use JIP::Debug qw(to_debug to_debug_raw to_debug_empty);
+    use JIP::Debug qw(to_debug to_debug_raw to_debug_empty to_debug_count);
     BEGIN { $JIP::Debug::HANDLE = IO::File->new('/home/my_dir/debug.log', '>>'); }
 
 =head1 SEE ALSO

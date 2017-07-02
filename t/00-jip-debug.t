@@ -12,7 +12,7 @@ BEGIN {
     plan skip_all => 'Test::Exception needed' if $@;
 }
 
-plan tests => 8;
+plan tests => 9;
 
 subtest 'Require some module' => sub {
     plan tests => 2;
@@ -29,7 +29,7 @@ subtest 'Require some module' => sub {
 };
 
 subtest 'Exportable functions' => sub {
-    plan tests => 4;
+    plan tests => 5;
 
     can_ok 'JIP::Debug', qw(to_debug to_debug_raw to_debug_empty);
 
@@ -43,6 +43,10 @@ subtest 'Exportable functions' => sub {
 
     throws_ok { to_debug_empty() } qr{
         Undefined \s subroutine \s &main::to_debug_empty \s called
+    }x;
+
+    throws_ok { to_debug_count() } qr{
+        Undefined \s subroutine \s &main::to_debug_count \s called
     }x;
 };
 
@@ -147,5 +151,42 @@ subtest 'to_debug_empty()' => sub {
         \n{20}
         $
     }x;
+};
+
+subtest 'to_debug_count()' => sub {
+    plan tests => 8;
+
+    my $run_test = sub {
+        my $label_regex = shift;
+        my $count       = shift;
+
+        my @params = @ARG;
+
+        my $stderr_listing = capture_stderr {
+            local $JIP::Debug::MAKE_MSG_HEADER = sub { 'header' };
+            local $JIP::Debug::MAYBE_COLORED   = sub { $ARG[0] };
+
+            JIP::Debug::to_debug_count(@params);
+        };
+        like $stderr_listing, qr{
+            ^
+            header
+            \n
+            $label_regex: \s $count
+            \n\n
+            $
+        }x;
+    };
+
+    $run_test->(q{<no \s label>}, 1);
+    $run_test->(q{<no \s label>}, 2);
+    $run_test->(q{<no \s label>}, 3, undef);
+    $run_test->(q{<no \s label>}, 4, q{});
+
+    $run_test->(q{0}, 1, 0);
+    $run_test->(q{0}, 2, q{0});
+
+    $run_test->(q{tratata}, 1, 'tratata');
+    $run_test->(q{tratata}, 2, 'tratata');
 };
 
