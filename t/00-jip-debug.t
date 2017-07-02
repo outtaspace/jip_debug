@@ -154,13 +154,21 @@ subtest 'to_debug_empty()' => sub {
 };
 
 subtest 'to_debug_count()' => sub {
-    plan tests => 8;
+    my @tests = (
+        [q{<no \s label>}, 1],
+        [q{<no \s label>}, 2],
+        [q{<no \s label>}, 3, undef],
+        [q{<no \s label>}, 4, q{}],
+        [q{0}, 1, 0],
+        [q{0}, 2, q{0}],
+        [q{tratata}, 1, 'tratata'],
+        [q{tratata}, 2, 'tratata'],
+    );
 
-    my $run_test = sub {
-        my $label_regex = shift;
-        my $count       = shift;
+    plan tests => scalar(@tests);
 
-        my @params = @ARG;
+    foreach my $test (@tests) {
+        my ($label_regex, $count, @params) = @{ $test };
 
         my $stderr_listing = capture_stderr {
             local $JIP::Debug::MAKE_MSG_HEADER = sub { 'header' };
@@ -176,17 +184,6 @@ subtest 'to_debug_count()' => sub {
             \n\n
             $
         }x;
-    };
-
-    $run_test->(q{<no \s label>}, 1);
-    $run_test->(q{<no \s label>}, 2);
-    $run_test->(q{<no \s label>}, 3, undef);
-    $run_test->(q{<no \s label>}, 4, q{});
-
-    $run_test->(q{0}, 1, 0);
-    $run_test->(q{0}, 2, q{0});
-
-    $run_test->(q{tratata}, 1, 'tratata');
-    $run_test->(q{tratata}, 2, 'tratata');
+    }
 };
 
