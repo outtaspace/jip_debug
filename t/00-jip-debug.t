@@ -140,7 +140,6 @@ subtest 'to_debug_empty()' => sub {
     my $stderr_listing = capture_stderr {
         local $JIP::Debug::MAKE_MSG_HEADER = sub { 'header' };
         local $JIP::Debug::MAYBE_COLORED   = sub { $ARG[0] };
-        local $JIP::Debug::DUMPER_INDENT   = 0;
 
         JIP::Debug::to_debug_empty(42);
     };
