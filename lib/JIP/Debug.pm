@@ -75,7 +75,7 @@ sub to_debug {
         local $Data::Dumper::Deepcopy = $DUMPER_DEEPCOPY;
         local $Data::Dumper::Sortkeys = $DUMPER_SORTKEYS;
 
-        Dumper(\@_);
+        Dumper(\@ARG);
     };
 
     my $msg = sprintf $MSG_FORMAT, $MAKE_MSG_HEADER->(), $msg_body;

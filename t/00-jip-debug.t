@@ -9,7 +9,7 @@ use Capture::Tiny qw(capture capture_stderr);
 
 BEGIN {
     eval 'use Test::Exception';
-    plan skip_all => 'Test::Exception needed' if $@;
+    plan skip_all => 'Test::Exception needed' if $EVAL_ERROR;
 }
 
 plan tests => 9;
@@ -147,7 +147,8 @@ subtest 'to_debug_empty()' => sub {
         ^
         header
         \n
-        \n{20}
+        \n{18}
+        \n\n
         $
     }x;
 };
