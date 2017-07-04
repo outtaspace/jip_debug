@@ -25,10 +25,10 @@ our $DUMPER_SORTKEYS = 1;
 
 our $COLOR = 'bright_green';
 
-our $MAYBE_COLORED = sub { $ARG[0] };
+our $MAYBE_COLORED = sub { return $ARG[0] };
 eval {
     require Term::ANSIColor;
-    $MAYBE_COLORED = sub { Term::ANSIColor::colored($ARG[0], $COLOR); };
+    $MAYBE_COLORED = sub { return Term::ANSIColor::colored($ARG[0], $COLOR); };
 };
 
 our $MAKE_MSG_HEADER = sub {
@@ -66,7 +66,6 @@ eval {
         $set_subname->('MAYBE_COLORED',   $MAYBE_COLORED);
         $set_subname->('MAKE_MSG_HEADER', $MAKE_MSG_HEADER);
     }
-
 };
 
 sub to_debug {
@@ -80,7 +79,7 @@ sub to_debug {
 
     my $msg = sprintf $MSG_FORMAT, $MAKE_MSG_HEADER->(), $msg_body;
 
-    _send_to_output($msg);
+    return _send_to_output($msg);
 }
 
 sub to_debug_raw {
@@ -88,13 +87,13 @@ sub to_debug_raw {
 
     my $msg = sprintf $MSG_FORMAT, $MAKE_MSG_HEADER->(), $msg_text;
 
-    _send_to_output($msg);
+    return _send_to_output($msg);
 }
 
 sub to_debug_empty {
     my $msg = sprintf $MSG_FORMAT, $MAKE_MSG_HEADER->(), $MSG_EMPTY_LINES;
 
-    _send_to_output($msg);
+    return _send_to_output($msg);
 }
 
 sub to_debug_count {
@@ -110,7 +109,7 @@ sub to_debug_count {
 
     my $msg = sprintf $MSG_FORMAT, $MAKE_MSG_HEADER->(), $msg_body;
 
-    _send_to_output($msg);
+    return _send_to_output($msg);
 }
 
 sub _send_to_output {

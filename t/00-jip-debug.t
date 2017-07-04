@@ -99,8 +99,8 @@ subtest 'to_debug()' => sub {
     plan tests => 1;
 
     my $stderr_listing = capture_stderr {
-        local $JIP::Debug::MAKE_MSG_HEADER = sub { 'header' };
-        local $JIP::Debug::MAYBE_COLORED   = sub { $ARG[0] };
+        local $JIP::Debug::MAKE_MSG_HEADER = sub { return 'header' };
+        local $JIP::Debug::MAYBE_COLORED   = sub { return $ARG[0] };
         local $JIP::Debug::DUMPER_INDENT   = 0;
 
         JIP::Debug::to_debug(42);
@@ -119,8 +119,8 @@ subtest 'to_debug_raw()' => sub {
     plan tests => 1;
 
     my $stderr_listing = capture_stderr {
-        local $JIP::Debug::MAKE_MSG_HEADER = sub { 'header' };
-        local $JIP::Debug::MAYBE_COLORED   = sub { $ARG[0] };
+        local $JIP::Debug::MAKE_MSG_HEADER = sub { return 'header' };
+        local $JIP::Debug::MAYBE_COLORED   = sub { return $ARG[0] };
 
         JIP::Debug::to_debug_raw(42);
     };
@@ -138,8 +138,8 @@ subtest 'to_debug_empty()' => sub {
     plan tests => 1;
 
     my $stderr_listing = capture_stderr {
-        local $JIP::Debug::MAKE_MSG_HEADER = sub { 'header' };
-        local $JIP::Debug::MAYBE_COLORED   = sub { $ARG[0] };
+        local $JIP::Debug::MAKE_MSG_HEADER = sub { return 'header' };
+        local $JIP::Debug::MAYBE_COLORED   = sub { return $ARG[0] };
 
         JIP::Debug::to_debug_empty(42);
     };
@@ -171,8 +171,8 @@ subtest 'to_debug_count()' => sub {
         my ($label_regex, $count, @params) = @{ $test };
 
         my $stderr_listing = capture_stderr {
-            local $JIP::Debug::MAKE_MSG_HEADER = sub { 'header' };
-            local $JIP::Debug::MAYBE_COLORED   = sub { $ARG[0] };
+            local $JIP::Debug::MAKE_MSG_HEADER = sub { return 'header' };
+            local $JIP::Debug::MAYBE_COLORED   = sub { return $ARG[0] };
 
             JIP::Debug::to_debug_count(@params);
         };
