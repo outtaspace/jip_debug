@@ -12,7 +12,7 @@ BEGIN {
     plan skip_all => 'Test::Exception needed' if $EVAL_ERROR;
 }
 
-plan tests => 9;
+plan tests => 10;
 
 subtest 'Require some module' => sub {
     plan tests => 2;
@@ -185,5 +185,43 @@ subtest 'to_debug_count()' => sub {
             $
         }x;
     }
+};
+
+subtest 'to_debug_count() with callback' => sub {
+    plan tests => 1;
+
+    # cleanup
+    local %JIP::Debug::COUNT_OF_LABEL = (
+        $JIP::Debug::NO_LABEL_KEY => 0,
+    );
+
+    my $sequence = [];
+    my $cb = sub {
+        my ($label, $count) = @ARG;
+
+        push @{ $sequence }, [$label, $count];
+    };
+
+    my @tests = (
+        [],
+        ['tratata'],
+        [$cb],
+        ['tratata', $cb],
+        [$cb],
+        ['tratata', $cb],
+        [],
+        ['tratata'],
+    );
+
+    foreach my $test (@tests) {
+        capture_stderr { JIP::Debug::to_debug_count(@{ $test }); };
+    }
+
+    is_deeply $sequence, [
+        [q{<no label>}, 2],
+        [q{tratata},    2],
+        [q{<no label>}, 3],
+        [q{tratata},    3],
+    ];
 };
 

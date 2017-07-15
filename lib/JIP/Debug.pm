@@ -55,8 +55,8 @@ our $MAKE_MSG_HEADER = sub {
     return $MAYBE_COLORED->($text);
 };
 
-my $NO_LABEL_KEY   = '<no label>';
-my %COUNT_OF_LABEL = ($NO_LABEL_KEY => 0);
+our $NO_LABEL_KEY   = '<no label>';
+our %COUNT_OF_LABEL = ($NO_LABEL_KEY => 0);
 
 # Supported on Perl 5.22+
 eval {
@@ -97,7 +97,16 @@ sub to_debug_empty {
 }
 
 sub to_debug_count {
-    my $label = shift;
+    my ($label, $cb);
+    if (@ARG == 2 && ref $ARG[1] eq 'CODE') {
+        ($label, $cb) = @ARG;
+    }
+    elsif (@ARG == 1 && ref $ARG[0] eq 'CODE') {
+        $cb = $ARG[0];
+    }
+    elsif (@ARG == 1) {
+        $label = $ARG[0];
+    }
 
     $label = defined $label && length $label ? $label : $NO_LABEL_KEY;
 
@@ -108,6 +117,8 @@ sub to_debug_count {
     my $msg_body = sprintf '%s: %d', $label, $count;
 
     my $msg = sprintf $MSG_FORMAT, $MAKE_MSG_HEADER->(), $msg_body;
+
+    $cb->($label, $count) if defined $cb;
 
     return _send_to_output($msg);
 }
@@ -174,7 +185,7 @@ Version 0.999_002
 
 Logs the number of times that this particular call to C<to_debug_count()> has been called.
 
-This function takes an optional argument C<label>. If label is supplied, this function
+This function takes an optional argument C<label>. If C<label> is supplied, this function
 logs the number of times C<to_debug_count()> has been called with that particular C<label>.
 
 C<label> - a string. If this is supplied, C<to_debug_count()> outputs the number of times
@@ -186,6 +197,18 @@ If C<label> is omitted, the function logs the number of times C<to_debug_count()
 called at this particular line.
 
     to_debug_count();
+
+This function takes an optional argument C<callback>:
+
+    to_debug_count('label', sub {
+        my ($label, $count) = @_;
+    });
+
+or
+
+    to_debug_count(sub {
+        my ($label, $count) = @_;
+    });
 
 =head1 CODE SNIPPET
 
