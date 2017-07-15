@@ -29,7 +29,7 @@ subtest 'Require some module' => sub {
 };
 
 subtest 'Exportable functions' => sub {
-    plan tests => 5;
+    plan tests => 6;
 
     can_ok 'JIP::Debug', qw(to_debug to_debug_raw to_debug_empty);
 
@@ -47,6 +47,10 @@ subtest 'Exportable functions' => sub {
 
     throws_ok { to_debug_count() } qr{
         Undefined \s subroutine \s &main::to_debug_count \s called
+    }x;
+
+    throws_ok { to_debug_trace() } qr{
+        Undefined \s subroutine \s &main::to_debug_trace \s called
     }x;
 };
 
