@@ -5,13 +5,21 @@ use base qw(Exporter);
 use 5.006;
 use strict;
 use warnings;
+use Devel::StackTrace;
 use Carp qw(croak);
 use Data::Dumper qw(Dumper);
 use Fcntl qw(LOCK_EX LOCK_UN);
 use English qw(-no_match_vars);
 
-our $VERSION   = '0.999_002';
-our @EXPORT_OK = qw(to_debug to_debug_raw to_debug_empty to_debug_count);
+our $VERSION = '0.999_002';
+
+our @EXPORT_OK = qw(
+    to_debug
+    to_debug_raw
+    to_debug_empty
+    to_debug_count
+    to_debug_trace
+);
 
 our $HANDLE = \*STDERR;
 
@@ -22,6 +30,11 @@ our $MSG_EMPTY_LINES = qq{\n} x 18;
 our $DUMPER_INDENT   = 1;
 our $DUMPER_DEEPCOPY = 1;
 our $DUMPER_SORTKEYS = 1;
+
+our %TRACE_PARAMS = (
+    skip_frames => 1, # skip to_debug_trace
+);
+our %TRACE_AS_STRING_PARAMS;
 
 our $COLOR = 'bright_green';
 
@@ -123,6 +136,21 @@ sub to_debug_count {
     return _send_to_output($msg);
 }
 
+sub to_debug_trace {
+    my $cb = shift;
+
+    my $trace = Devel::StackTrace->new(%TRACE_PARAMS);
+
+    my $msg_body = $trace->as_string(%TRACE_AS_STRING_PARAMS);
+    $msg_body =~ s{\n+$}{}x;
+
+    my $msg = sprintf $MSG_FORMAT, $MAKE_MSG_HEADER->(), $msg_body;
+
+    $cb->($trace) if defined $cb;
+
+    return _send_to_output($msg);
+}
+
 sub _send_to_output {
     my $msg = shift;
 
@@ -159,7 +187,7 @@ Version 0.999_002
 
 =head1 SYNOPSIS
 
-    use JIP::Debug qw(to_debug to_debug_raw to_debug_empty to_debug_count);
+    use JIP::Debug qw(to_debug to_debug_raw to_debug_empty to_debug_count to_debug_trace);
 
     # The to_debug and other functions print messages to an output stream.
 
@@ -178,6 +206,9 @@ Version 0.999_002
 
     # Prints the number of times that this particular call to to_debug_count() has been called
     to_debug_count();
+
+    # Prints a stack trace
+    to_debug_trace();
 
 =head1 METHODS
 
@@ -210,9 +241,19 @@ or
         my ($label, $count) = @_;
     });
 
+=head2 to_debug_trace
+
+Logs a stack trace from the point where the method was called.
+
+This function takes an optional argument C<callback>:
+
+    to_debug_trace(sub {
+        my ($trace) = @_;
+    });
+
 =head1 CODE SNIPPET
 
-    use JIP::Debug qw(to_debug to_debug_raw to_debug_empty to_debug_count);
+    use JIP::Debug qw(to_debug to_debug_raw to_debug_empty to_debug_count to_debug_trace);
     BEGIN { $JIP::Debug::HANDLE = IO::File->new('/home/my_dir/debug.log', '>>'); }
 
 =head1 SEE ALSO

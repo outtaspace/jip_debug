@@ -12,7 +12,7 @@ BEGIN {
     plan skip_all => 'Test::Exception needed' if $EVAL_ERROR;
 }
 
-plan tests => 10;
+plan tests => 11;
 
 subtest 'Require some module' => sub {
     plan tests => 2;
@@ -223,5 +223,24 @@ subtest 'to_debug_count() with callback' => sub {
         [q{<no label>}, 3],
         [q{tratata},    3],
     ];
+};
+
+subtest 'to_debug_trace()' => sub {
+    plan tests => 1;
+
+    my $stderr_listing = capture_stderr {
+        local $JIP::Debug::MAKE_MSG_HEADER = sub { return 'header' };
+        local $JIP::Debug::MAYBE_COLORED   = sub { return $ARG[0] };
+
+        JIP::Debug::to_debug_trace();
+    };
+    like $stderr_listing, qr{
+        ^
+        header
+        \n
+        Trace \s begun \s at .* \s line \s \d+
+        \n\n
+        $
+    }sx;
 };
 
