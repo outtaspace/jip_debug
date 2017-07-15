@@ -51,7 +51,7 @@ subtest 'Exportable functions' => sub {
 };
 
 subtest 'Exportable variables' => sub {
-    plan tests => 8;
+    plan tests => 10;
 
     no warnings qw(once);
 
@@ -64,32 +64,36 @@ subtest 'Exportable variables' => sub {
     ok ref($JIP::Debug::HANDLE)          eq 'GLOB';
     ok ref($JIP::Debug::MAYBE_COLORED)   eq 'CODE';
     ok ref($JIP::Debug::MAKE_MSG_HEADER) eq 'CODE';
+
+    is_deeply \%JIP::Debug::TRACE_PARAMS, {skip_frames => 1};
+
+    is_deeply \%JIP::Debug::TRACE_AS_STRING_PARAMS, {};
 };
 
-subtest '_resolve_subroutine_name()' => sub {
+subtest 'resolve_subroutine_name()' => sub {
     plan tests => 6;
 
-    is JIP::Debug::_resolve_subroutine_name(),                  undef;
-    is JIP::Debug::_resolve_subroutine_name(undef),             undef;
-    is JIP::Debug::_resolve_subroutine_name(q{}),               undef;
-    is JIP::Debug::_resolve_subroutine_name('subroutine_name'), undef;
+    is JIP::Debug::resolve_subroutine_name(),                  undef;
+    is JIP::Debug::resolve_subroutine_name(undef),             undef;
+    is JIP::Debug::resolve_subroutine_name(q{}),               undef;
+    is JIP::Debug::resolve_subroutine_name('subroutine_name'), undef;
 
-    is JIP::Debug::_resolve_subroutine_name('::subroutine_name'),                 'subroutine_name';
-    is JIP::Debug::_resolve_subroutine_name('package::package::subroutine_name'), 'subroutine_name';
+    is JIP::Debug::resolve_subroutine_name('::subroutine_name'),                 'subroutine_name';
+    is JIP::Debug::resolve_subroutine_name('package::package::subroutine_name'), 'subroutine_name';
 };
 
-subtest '_send_to_output()' => sub {
+subtest 'send_to_output()' => sub {
     plan tests => 4;
 
     my ($stdout, $stderr) = capture {
-        JIP::Debug::_send_to_output(42);
+        JIP::Debug::send_to_output(42);
     };
     is $stderr, 42;
     is $stdout, q{};
 
     local $JIP::Debug::HANDLE = \*STDOUT;
     ($stdout, $stderr) = capture {
-        JIP::Debug::_send_to_output(42);
+        JIP::Debug::send_to_output(42);
     };
     is $stderr, q{};
     is $stdout, 42;
@@ -165,7 +169,7 @@ subtest 'to_debug_count()' => sub {
         [q{tratata}, 2, 'tratata'],
     );
 
-    plan tests => scalar(@tests);
+    plan tests => scalar @tests;
 
     foreach my $test (@tests) {
         my ($label_regex, $count, @params) = @{ $test };

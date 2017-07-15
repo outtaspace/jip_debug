@@ -46,12 +46,12 @@ eval {
 
 our $MAKE_MSG_HEADER = sub {
     # $MAKE_MSG_HEADER=0, to_debug=1
-    my ($package, undef, $line) = caller(1);
+    my ($package, undef, $line) = caller 1;
 
     # $MAKE_MSG_HEADER=0, to_debug=1, subroutine=2
-    my $subroutine = (caller(2))[3];
+    my $subroutine = (caller 2)[3];
 
-    $subroutine = _resolve_subroutine_name($subroutine);
+    $subroutine = resolve_subroutine_name($subroutine);
 
     my $text = join q{, }, (
         sprintf('package=%s', $package),
@@ -92,7 +92,7 @@ sub to_debug {
 
     my $msg = sprintf $MSG_FORMAT, $MAKE_MSG_HEADER->(), $msg_body;
 
-    return _send_to_output($msg);
+    return send_to_output($msg);
 }
 
 sub to_debug_raw {
@@ -100,13 +100,13 @@ sub to_debug_raw {
 
     my $msg = sprintf $MSG_FORMAT, $MAKE_MSG_HEADER->(), $msg_text;
 
-    return _send_to_output($msg);
+    return send_to_output($msg);
 }
 
 sub to_debug_empty {
     my $msg = sprintf $MSG_FORMAT, $MAKE_MSG_HEADER->(), $MSG_EMPTY_LINES;
 
-    return _send_to_output($msg);
+    return send_to_output($msg);
 }
 
 sub to_debug_count {
@@ -133,7 +133,7 @@ sub to_debug_count {
 
     $cb->($label, $count) if defined $cb;
 
-    return _send_to_output($msg);
+    return send_to_output($msg);
 }
 
 sub to_debug_trace {
@@ -148,10 +148,10 @@ sub to_debug_trace {
 
     $cb->($trace) if defined $cb;
 
-    return _send_to_output($msg);
+    return send_to_output($msg);
 }
 
-sub _send_to_output {
+sub send_to_output {
     my $msg = shift;
 
     return unless $HANDLE;
@@ -163,7 +163,7 @@ sub _send_to_output {
     return 1;
 }
 
-sub _resolve_subroutine_name {
+sub resolve_subroutine_name {
     my $subroutine = shift;
 
     return unless defined $subroutine;
