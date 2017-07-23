@@ -17,7 +17,7 @@ plan tests => 11;
 subtest 'Require some module' => sub {
     plan tests => 2;
 
-    use_ok 'JIP::Debug', '0.999_002';
+    use_ok 'JIP::Debug', '0.999_003';
     require_ok 'JIP::Debug';
 
     diag(

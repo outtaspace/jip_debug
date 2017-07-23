@@ -1,5 +1,9 @@
 Revision history for JIP-Debug
 
+0.999_003    2017-07-22
+        Added function to_debug_count.
+        Added function to_debug_trace.
+
 0.999_002    2017-06-21
         Small changes.
 
