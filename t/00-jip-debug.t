@@ -4,6 +4,7 @@ use 5.006;
 use strict;
 use warnings FATAL => 'all';
 use Test::More;
+use Term::ANSIColor ();
 use English qw(-no_match_vars);
 use Capture::Tiny qw(capture capture_stderr);
 
@@ -12,7 +13,7 @@ BEGIN {
     plan skip_all => 'Test::Exception needed' if $EVAL_ERROR;
 }
 
-plan tests => 11;
+plan tests => 12;
 
 subtest 'Require some module' => sub {
     plan tests => 2;
@@ -89,6 +90,8 @@ subtest 'resolve_subroutine_name()' => sub {
 subtest 'send_to_output()' => sub {
     plan tests => 4;
 
+    no warnings qw(once);
+
     my ($stdout, $stderr) = capture {
         JIP::Debug::send_to_output(42);
     };
@@ -103,12 +106,35 @@ subtest 'send_to_output()' => sub {
     is $stdout, 42;
 };
 
+subtest 'MAYBE_COLORED()' => sub {
+    plan tests => 8;
+
+    no warnings qw(once);
+
+    # with color
+    is $JIP::Debug::MAYBE_COLORED->(),      undef;
+    is $JIP::Debug::MAYBE_COLORED->(undef), undef;
+    is $JIP::Debug::MAYBE_COLORED->(q{}),   Term::ANSIColor::colored(q{}, $JIP::Debug::COLOR);
+    is $JIP::Debug::MAYBE_COLORED->(42),    Term::ANSIColor::colored(42, $JIP::Debug::COLOR);
+
+    # without color
+    {
+        local $JIP::Debug::COLOR = undef;
+
+        is $JIP::Debug::MAYBE_COLORED->(),      undef;
+        is $JIP::Debug::MAYBE_COLORED->(undef), undef;
+        is $JIP::Debug::MAYBE_COLORED->(q{}),   q{};
+        is $JIP::Debug::MAYBE_COLORED->(42),    42;
+    }
+};
+
 subtest 'to_debug()' => sub {
     plan tests => 1;
 
     my $stderr_listing = capture_stderr {
+        no warnings qw(once);
+
         local $JIP::Debug::MAKE_MSG_HEADER = sub { return 'header' };
-        local $JIP::Debug::MAYBE_COLORED   = sub { return $ARG[0] };
         local $JIP::Debug::DUMPER_INDENT   = 0;
 
         JIP::Debug::to_debug(42);
@@ -127,8 +153,9 @@ subtest 'to_debug_raw()' => sub {
     plan tests => 1;
 
     my $stderr_listing = capture_stderr {
+        no warnings qw(once);
+
         local $JIP::Debug::MAKE_MSG_HEADER = sub { return 'header' };
-        local $JIP::Debug::MAYBE_COLORED   = sub { return $ARG[0] };
 
         JIP::Debug::to_debug_raw(42);
     };
@@ -146,8 +173,9 @@ subtest 'to_debug_empty()' => sub {
     plan tests => 1;
 
     my $stderr_listing = capture_stderr {
+        no warnings qw(once);
+
         local $JIP::Debug::MAKE_MSG_HEADER = sub { return 'header' };
-        local $JIP::Debug::MAYBE_COLORED   = sub { return $ARG[0] };
 
         JIP::Debug::to_debug_empty(42);
     };
@@ -179,8 +207,9 @@ subtest 'to_debug_count()' => sub {
         my ($label_regex, $count, @params) = @{ $test };
 
         my $stderr_listing = capture_stderr {
+            no warnings qw(once);
+
             local $JIP::Debug::MAKE_MSG_HEADER = sub { return 'header' };
-            local $JIP::Debug::MAYBE_COLORED   = sub { return $ARG[0] };
 
             JIP::Debug::to_debug_count(@params);
         };
@@ -197,6 +226,8 @@ subtest 'to_debug_count()' => sub {
 
 subtest 'to_debug_count() with callback' => sub {
     plan tests => 1;
+
+    no warnings qw(once);
 
     # cleanup
     local %JIP::Debug::COUNT_OF_LABEL = (
@@ -237,8 +268,9 @@ subtest 'to_debug_trace()' => sub {
     plan tests => 1;
 
     my $stderr_listing = capture_stderr {
+        no warnings qw(once);
+
         local $JIP::Debug::MAKE_MSG_HEADER = sub { return 'header' };
-        local $JIP::Debug::MAYBE_COLORED   = sub { return $ARG[0] };
 
         JIP::Debug::to_debug_trace();
     };

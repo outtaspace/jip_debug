@@ -5,6 +5,7 @@ use base qw(Exporter);
 use 5.006;
 use strict;
 use warnings;
+use Term::ANSIColor ();
 use Devel::StackTrace;
 use Carp qw(croak);
 use Data::Dumper qw(Dumper);
@@ -38,10 +39,11 @@ our %TRACE_AS_STRING_PARAMS;
 
 our $COLOR = 'bright_green';
 
-our $MAYBE_COLORED = sub { return $ARG[0] };
-eval {
-    require Term::ANSIColor;
-    $MAYBE_COLORED = sub { return Term::ANSIColor::colored($ARG[0], $COLOR); };
+our $MAYBE_COLORED = sub {
+    my $text = shift;
+
+    return defined $text && defined $COLOR
+        ? Term::ANSIColor::colored($text, $COLOR) : $text;
 };
 
 our $MAKE_MSG_HEADER = sub {
