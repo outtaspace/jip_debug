@@ -1,5 +1,11 @@
 Revision history for JIP-Debug
 
+0.999_004    2017-07-30
+        Added ".travis.yml".
+        Updated Term::ANSIColor requirement to 3.00.
+        Modernized Makefile.PL.
+        Bug fixes and other minor improvements.
+
 0.999_003    2017-07-22
         Added function to_debug_count.
         Added function to_debug_trace.
