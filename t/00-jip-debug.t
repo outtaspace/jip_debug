@@ -4,14 +4,10 @@ use 5.006;
 use strict;
 use warnings FATAL => 'all';
 use Test::More;
+use Test::Exception;
 use Term::ANSIColor ();
 use English qw(-no_match_vars);
 use Capture::Tiny qw(capture capture_stderr);
-
-BEGIN {
-    eval 'use Test::Exception';
-    plan skip_all => 'Test::Exception needed' if $EVAL_ERROR;
-}
 
 plan tests => 12;
 
