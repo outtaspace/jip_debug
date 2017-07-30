@@ -20,11 +20,11 @@ my %write_makefile_param = (
         'Test::More'      => 0,
         'Capture::Tiny'   => 0,
         'Test::Exception' => 0,
-        'Term::ANSIColor' => 0,
+        'Term::ANSIColor' => '3.0',
     },
     PREREQ_PM => {
         'Devel::StackTrace' => 0,
-        'Term::ANSIColor'   => 0,
+        'Term::ANSIColor'   => '3.0',
         'Exporter'          => 0,
         'English'           => 0,
         'Fcntl'             => 0,

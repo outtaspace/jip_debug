@@ -13,7 +13,7 @@ env:
     - PERL_CPANM_OPT="--notest --force --skip-satisfied"
 before_install:
     - "cpanm Capture::Tiny"
-    - "cpanm Term::ANSIColor"
+    - "cpanm Term::ANSIColor@3.0"
     - "cpanm Test::Exception"
     - "cpanm Devel::StackTrace"
 install:

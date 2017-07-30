@@ -5,7 +5,7 @@ use strict;
 use warnings FATAL => 'all';
 use Test::More;
 use Test::Exception;
-use Term::ANSIColor ();
+use Term::ANSIColor 3.00 ();
 use English qw(-no_match_vars);
 use Capture::Tiny qw(capture capture_stderr);
 

@@ -5,7 +5,7 @@ use base qw(Exporter);
 use 5.006;
 use strict;
 use warnings;
-use Term::ANSIColor ();
+use Term::ANSIColor 3.00 ();
 use Devel::StackTrace;
 use Carp qw(croak);
 use Data::Dumper qw(Dumper);
