@@ -1,5 +1,9 @@
 Revision history for JIP-Debug
 
+0.01         2018-01-01
+        Improved documentation.
+        Added Perl 5.26 to .travis.yml.
+
 0.999_004    2017-07-30
         Added ".travis.yml".
         Updated Term::ANSIColor requirement to 3.00.
