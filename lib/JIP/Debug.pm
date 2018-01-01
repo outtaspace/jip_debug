@@ -228,6 +228,8 @@ A wrapper for C<Dumper> method of the C<Data::Dumper> module. The list of parame
 
 Parameters for C<Data::Dumper> can be changed, here are their analogues (and default values) in this module:
 
+=over 4
+
 =item *
 
 $JIP::Debug::DUMPER_INDENT = 1 I<or> $Data::Dumper::Indent = 1
@@ -246,11 +248,13 @@ $JIP::Debug::DUMPER_SORTKEYS = 1 I<or> $Data::Dumper::Sortkeys = 1
 
 Hash keys are dumped in sorted order.
 
+=back
+
 =head2 to_debug_raw(I<[STRING]>)
 
 Logs a string without any changes.
 
-=head2 to_debug_empty(I<[]>)
+=head2 to_debug_empty()
 
 Logs 18 empty lines. The content can be changed, there is a parameter for this C<$JIP::Debug::MSG_EMPTY_LINES>.
 
