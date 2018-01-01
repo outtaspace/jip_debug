@@ -212,9 +212,49 @@ Version 0.999_004
     # Prints a stack trace
     to_debug_trace();
 
+=head1 DESCRIPTION
+
+Each debug message is added a header with useful data during debugging, such as a C<package> (package name), a C<subroutine> (function name/method), a C<line> (line number).
+
+All debug messages are output via a file descriptor. Default is C<STDERR>. Value can be changed by editing the variable C<$JIP::Debug::HANDLE>.
+
+The list of exporting functions by default is empty, all functions of this module are exported explicitly.
+
 =head1 METHODS
 
-=head2 to_debug_count
+=head2 to_debug(I<LIST>)
+
+A wrapper for C<Dumper> method of the C<Data::Dumper> module. The list of parameters passed to C<to_debug>, without any changes, is passed to C<Dumper>.
+
+Parameters for C<Data::Dumper> can be changed, here are their analogues (and default values) in this module:
+
+=item *
+
+$JIP::Debug::DUMPER_INDENT = 1 I<or> $Data::Dumper::Indent = 1
+
+Mild pretty print.
+
+=item *
+
+$JIP::Debug::DUMPER_DEEPCOPY = 1 I<or> $Data::Dumper::Deepcopy = 1
+
+Avoid cross-refs.
+
+=item *
+
+$JIP::Debug::DUMPER_SORTKEYS = 1 I<or> $Data::Dumper::Sortkeys = 1
+
+Hash keys are dumped in sorted order.
+
+=head2 to_debug_raw(I<[STRING]>)
+
+Logs a string without any changes.
+
+=head2 to_debug_empty(I<[]>)
+
+Logs 18 empty lines. The content can be changed, there is a parameter for this C<$JIP::Debug::MSG_EMPTY_LINES>.
+
+=head2 to_debug_count(I<[LABEL, CODE]>)
 
 Logs the number of times that this particular call to C<to_debug_count()> has been called.
 
@@ -243,7 +283,7 @@ or
         my ($label, $count) = @_;
     });
 
-=head2 to_debug_trace
+=head2 to_debug_trace(I<[CODE]>)
 
 Logs a stack trace from the point where the method was called.
 
