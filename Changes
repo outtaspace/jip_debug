@@ -1,5 +1,8 @@
 Revision history for JIP-Debug
 
+0.02         2018-01-03
+        Improved documentation.
+
 0.01         2018-01-01
         Improved documentation.
         Added Perl 5.26 to .travis.yml.
