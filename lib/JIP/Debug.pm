@@ -58,7 +58,7 @@ our $MAKE_MSG_HEADER = sub {
     my $text = join q{, }, (
         sprintf('package=%s', $package),
         (defined $subroutine ? sprintf('subroutine=%s', $subroutine) : ()),
-        sprintf('line=%d', $line, ),
+        sprintf('line=%d', $line),
     );
     $text = qq{[$text]:};
 
@@ -185,32 +185,77 @@ JIP::Debug - provides a convenient way to attach debug print statements anywhere
 
 =head1 VERSION
 
-Version 0.01
+This document describes C<JIP::Debug> version C<0.01>.
 
 =head1 SYNOPSIS
 
-    use JIP::Debug qw(to_debug to_debug_raw to_debug_empty to_debug_count to_debug_trace);
+For complex data structures (references, arrays and hashes) you can use the
 
-    # The to_debug and other functions print messages to an output stream.
+    use JIP::Debug qw(to_debug);
 
-    # For complex data structures (references, arrays and hashes) you can use the
     to_debug(
         an_array    => [],
         a_hash      => {},
         a_reference => \42,
     );
 
-    # Prints a string
+C<to_debug({a =E<gt> 1, b =E<gt> 1})> will produce the output:
+
+    --------------------------------------------------------------------------------
+    [package=main, subroutine=tratata, line=1]:
+    --------------------------------------------------------------------------------
+    $VAR1 = [
+      {
+        'a' => 1,
+        'b' => 1
+      }
+    ];
+
+Prints a string
+
+    use JIP::Debug qw(to_debug_raw);
+
     to_debug_raw('Hello');
 
-    # Prints empty lines
+C<to_debug_raw('Hello')> will produce the output:
+
+    --------------------------------------------------------------------------------
+    [package=main, subroutine=tratata, line=1]:
+    --------------------------------------------------------------------------------
+    Hello
+
+Prints empty lines
+
+    use JIP::Debug qw(to_debug_empty);
+
     to_debug_empty();
 
-    # Prints the number of times that this particular call to to_debug_count() has been called
-    to_debug_count();
+Prints the number of times that this particular call to to_debug_count() has been called
 
-    # Prints a stack trace
+    use JIP::Debug qw(to_debug_count);
+
+    to_debug_count('tratata label');
+
+C<to_debug_count('tratata label')> will produce the output:
+
+    --------------------------------------------------------------------------------
+    [package=main, subroutine=tratata, line=1]:
+    --------------------------------------------------------------------------------
+    tratata label: 1
+
+Prints a stack trace
+
+    use JIP::Debug qw(to_debug_trace);
+
     to_debug_trace();
+
+C<to_debug_trace()> will produce the output:
+
+    --------------------------------------------------------------------------------
+    [package=main, subroutine=tratata, line=1]:
+    --------------------------------------------------------------------------------
+    Trace begun at -e line 1
+    main::tratata at -e line 1
 
 =head1 DESCRIPTION
 
@@ -220,7 +265,7 @@ All debug messages are output via a file descriptor. Default is C<STDERR>. Value
 
 The list of exporting functions by default is empty, all functions of this module are exported explicitly.
 
-=head1 METHODS
+=head1 SUBROUTINES/METHODS
 
 =head2 to_debug(I<LIST>)
 
@@ -302,9 +347,17 @@ This function takes an optional argument C<callback>:
     use JIP::Debug qw(to_debug to_debug_raw to_debug_empty to_debug_count to_debug_trace);
     BEGIN { $JIP::Debug::HANDLE = IO::File->new('/home/my_dir/debug.log', '>>'); }
 
+=head1 DIAGNOSTICS
+
+None.
+
+=head1 CONFIGURATION AND ENVIRONMENT
+
+C<JIP::Debug> requires no configuration files or environment variables.
+
 =head1 SEE ALSO
 
-Debug::Simple, Debuggit, Debug::Easy
+L<Debuggit>, L<Debug::Simple>, L<Debug::Easy>
 
 =head1 AUTHOR
 
