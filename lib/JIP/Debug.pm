@@ -12,7 +12,7 @@ use Data::Dumper qw(Dumper);
 use Fcntl qw(LOCK_EX LOCK_UN);
 use English qw(-no_match_vars);
 
-our $VERSION = '0.02';
+our $VERSION = '0.021';
 
 our @EXPORT_OK = qw(
     to_debug
@@ -185,7 +185,7 @@ JIP::Debug - provides a convenient way to attach debug print statements anywhere
 
 =head1 VERSION
 
-This document describes C<JIP::Debug> version C<0.02>.
+This document describes C<JIP::Debug> version C<0.021>.
 
 =head1 SYNOPSIS
 
