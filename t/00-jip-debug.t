@@ -52,15 +52,16 @@ subtest 'Exportable functions' => sub {
 };
 
 subtest 'Exportable variables' => sub {
-    plan tests => 10;
+    plan tests => 11;
 
     no warnings qw(once);
 
-    ok $JIP::Debug::COLOR           eq 'bright_green';
-    ok $JIP::Debug::MSG_DELIMITER   eq q{-} x 80;
-    ok $JIP::Debug::DUMPER_INDENT   == 1;
-    ok $JIP::Debug::DUMPER_DEEPCOPY == 1;
-    ok $JIP::Debug::DUMPER_SORTKEYS == 1;
+    ok $JIP::Debug::COLOR                 eq 'bright_green';
+    ok $JIP::Debug::MSG_DELIMITER         eq q{-} x 80;
+    ok $JIP::Debug::DUMPER_INDENT         == 1;
+    ok $JIP::Debug::DUMPER_DEEPCOPY       == 1;
+    ok $JIP::Debug::DUMPER_SORTKEYS       == 1;
+    ok $JIP::Debug::DUMPER_TRAILING_COMMA == 1;
 
     ok ref($JIP::Debug::HANDLE)          eq 'GLOB';
     ok ref($JIP::Debug::MAYBE_COLORED)   eq 'CODE';

@@ -28,9 +28,10 @@ our $MSG_FORMAT      = qq{%s\n%s\n\n};
 our $MSG_DELIMITER   = q{-} x 80;
 our $MSG_EMPTY_LINES = qq{\n} x 18;
 
-our $DUMPER_INDENT   = 1;
-our $DUMPER_DEEPCOPY = 1;
-our $DUMPER_SORTKEYS = 1;
+our $DUMPER_INDENT         = 1;
+our $DUMPER_DEEPCOPY       = 1;
+our $DUMPER_SORTKEYS       = 1;
+our $DUMPER_TRAILING_COMMA = 1;
 
 our %TRACE_PARAMS = (
     skip_frames => 1, # skip to_debug_trace
@@ -85,9 +86,10 @@ eval {
 
 sub to_debug {
     my $msg_body = do {
-        local $Data::Dumper::Indent   = $DUMPER_INDENT;
-        local $Data::Dumper::Deepcopy = $DUMPER_DEEPCOPY;
-        local $Data::Dumper::Sortkeys = $DUMPER_SORTKEYS;
+        local $Data::Dumper::Indent        = $DUMPER_INDENT;
+        local $Data::Dumper::Deepcopy      = $DUMPER_DEEPCOPY;
+        local $Data::Dumper::Sortkeys      = $DUMPER_SORTKEYS;
+        local $Data::Dumper::Trailingcomma = $DUMPER_TRAILING_COMMA;
 
         Dumper(\@ARG);
     };
@@ -292,6 +294,12 @@ Avoid cross-refs.
 $JIP::Debug::DUMPER_SORTKEYS = 1 I<or> $Data::Dumper::Sortkeys = 1
 
 Hash keys are dumped in sorted order.
+
+=item *
+
+$JIP::Debug::DUMPER_TRAILING_COMMA = 1 I<or> $Data::Dumper::Trailingcomma = 1
+
+Controls whether a comma is added after the last element of an array or hash.
 
 =back
 

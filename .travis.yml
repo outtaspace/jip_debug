@@ -17,6 +17,7 @@ before_install:
     - "cpanm Term::ANSIColor@3.0"
     - "cpanm Test::Exception"
     - "cpanm Devel::StackTrace"
+    - "cpanm Data::Dumper@2.160"
 install:
     - "perl Makefile.PL && make test"
 sudo: false

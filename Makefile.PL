@@ -40,7 +40,7 @@ my %write_makefile_param = (
         'Exporter'          => 0,
         'English'           => 0,
         'Fcntl'             => 0,
-        'Data::Dumper'      => 0,
+        'Data::Dumper'      => '2.160',
         'Carp'              => 0,
     },
     dist  => {COMPRESS => 'gzip -9f', SUFFIX => 'gz'},
