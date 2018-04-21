@@ -291,7 +291,7 @@ subtest 'to_debug_truncate()' => sub {
 
     my $fh = File::Temp->new(UNLINK => 1, SUFFIX => '.log');
 
-    local $JIP::Debug::HANDLE = $fh;
+    local $JIP::Debug::HANDLE          = $fh;
     local $JIP::Debug::MAKE_MSG_HEADER = sub { return 'header' };
 
     JIP::Debug::to_debug_raw(42);
