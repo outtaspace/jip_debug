@@ -33,6 +33,7 @@ my %write_makefile_param = (
         'Capture::Tiny'   => 0,
         'Test::Exception' => 0,
         'Term::ANSIColor' => '3.0',
+        'File::Temp'      => 0,
     },
     PREREQ_PM => {
         'Devel::StackTrace' => 0,

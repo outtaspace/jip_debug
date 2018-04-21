@@ -6,10 +6,11 @@ use warnings FATAL => 'all';
 use Test::More;
 use Test::Exception;
 use Term::ANSIColor 3.00 ();
+use File::Temp qw(tempfile);
 use English qw(-no_match_vars);
 use Capture::Tiny qw(capture capture_stderr);
 
-plan tests => 12;
+plan tests => 13;
 
 subtest 'Require some module' => sub {
     plan tests => 2;
@@ -26,7 +27,7 @@ subtest 'Require some module' => sub {
 };
 
 subtest 'Exportable functions' => sub {
-    plan tests => 6;
+    plan tests => 7;
 
     can_ok 'JIP::Debug', qw(to_debug to_debug_raw to_debug_empty);
 
@@ -48,6 +49,10 @@ subtest 'Exportable functions' => sub {
 
     throws_ok { to_debug_trace() } qr{
         Undefined \s subroutine \s &main::to_debug_trace \s called
+    }x;
+
+    throws_ok { to_debug_truncate() } qr{
+        Undefined \s subroutine \s &main::to_debug_truncate \s called
     }x;
 };
 
@@ -279,5 +284,29 @@ subtest 'to_debug_trace()' => sub {
         \n\n
         $
     }sx;
+};
+
+subtest 'to_debug_truncate()' => sub {
+    plan tests => 2;
+
+    my $fh = File::Temp->new(UNLINK => 1, SUFFIX => '.log');
+
+    local $JIP::Debug::HANDLE = $fh;
+    local $JIP::Debug::MAKE_MSG_HEADER = sub { return 'header' };
+
+    JIP::Debug::to_debug_raw(42);
+
+    my $slurp = sub {
+        $fh->flush;
+        $fh->seek(0, 0);
+
+        return join q{}, $fh->getlines;
+    };
+
+    is $slurp->(), qq{header\n42\n\n};
+
+    JIP::Debug::to_debug_truncate();
+
+    is $slurp->(), q{};
 };
 

@@ -20,6 +20,7 @@ our @EXPORT_OK = qw(
     to_debug_empty
     to_debug_count
     to_debug_trace
+    to_debug_truncate
 );
 
 our $HANDLE = \*STDERR;
@@ -153,6 +154,16 @@ sub to_debug_trace {
     $cb->($trace) if defined $cb;
 
     return send_to_output($msg);
+}
+
+sub to_debug_truncate {
+    return unless $HANDLE;
+
+    flock $HANDLE, LOCK_EX;
+    truncate $HANDLE, 0;
+    flock $HANDLE, LOCK_UN;
+
+    return 1;
 }
 
 sub send_to_output {
@@ -350,9 +361,13 @@ This function takes an optional argument C<callback>:
         my ($trace) = @_;
     });
 
+=head2 to_debug_truncate()
+
+Truncates the file opened on C<$JIP::Debug::HANDLE>. In fact it's just a wrapper for the built-in function C<truncate>.
+
 =head1 CODE SNIPPET
 
-    use JIP::Debug qw(to_debug to_debug_raw to_debug_empty to_debug_count to_debug_trace);
+    use JIP::Debug qw(to_debug to_debug_raw to_debug_empty to_debug_count to_debug_trace to_debug_truncate);
     BEGIN { $JIP::Debug::HANDLE = IO::File->new('/home/my_dir/debug.log', '>>'); }
 
 =head1 DIAGNOSTICS
